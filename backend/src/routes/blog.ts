@@ -95,7 +95,18 @@ blogRouter.get('/bulk', async (c) => {
     datasourceUrl: c.env.DATABASE_URL
   }).$extends(withAccelerate());
   try {
-    const allPosts = await post.findMany();
+    const allPosts = await post.findMany({
+      select: {
+        content: true,
+        title: true,
+        id: true,
+        author: {
+          select: {
+            name: true
+          }
+        }
+      }
+    });
     return c.json({ allPosts })
   } catch (error) {
     console.log(error);
@@ -113,6 +124,16 @@ blogRouter.get('/:id', async (c) => {
     const postDetails = await post.findUnique({
       where:{
         id
+      },
+      select: {
+        content: true,
+        title: true,
+        id: true,
+        author: {
+          select: {
+            name: true
+          }
+        }
       }
     })
     return c.json({ postDetails })
